@@ -6,21 +6,17 @@
     "vscode": {
       "settings": {
         "workbench.colorTheme": "Monospace Light",
-        "cmake.showOptionsMovedNotification": false,
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
         "git.enableSmartCommit": true,
-        "git.confirmSync": false,
         "workbench.iconTheme": "monospace-icons",
         "window.menuBarVisibility": "visible",
         "terminal.integrated.focusAfterRun": "terminal"
       },
       "extensions": [
         "ms-vscode.cpptools",
-        "ms-vscode.cmake-tools",
-        "twxs.cmake",
         "keksiqc.idx-monospace-theme"
       ]
     }
