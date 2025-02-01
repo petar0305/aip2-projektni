@@ -4,6 +4,7 @@
 int main()
 {
     int a = 5;
+    cin >> a;
     dv(a);
 
     return 0;
