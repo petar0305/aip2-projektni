@@ -1,0 +1,14 @@
+# Executables
+*
+!*.*
+!*/
+
+# Specific extensions to exclude
+*.exe
+*.out
+*.app
+*.bin
+
+# Compiled objects
+*.o
+*.obj
