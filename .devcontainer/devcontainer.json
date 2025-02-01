@@ -6,13 +6,16 @@
     "vscode": {
       "settings": {
         "workbench.colorTheme": "Monospace Light",
-        "workbench.iconTheme": "monospace-icons",
-        "window.menuBarVisibility": "visible",
+        "cmake.showOptionsMovedNotification": false,
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
         "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "workbench.iconTheme": "monospace-icons",
+        "window.menuBarVisibility": "visible",
+        "terminal.integrated.focusAfterRun": "terminal"
       },
       "extensions": [
         "ms-vscode.cpptools-extension-pack",
