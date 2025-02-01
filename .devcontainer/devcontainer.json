@@ -24,8 +24,5 @@
       ]
     }
   },
-  "remoteUser": "vscode",
-  "settings": {
-    "window.menuBarVisibility": "visible"
-  }
+  "remoteUser": "vscode"
 }
