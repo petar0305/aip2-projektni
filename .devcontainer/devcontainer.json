@@ -1,0 +1,40 @@
+{
+  "name": "c_cpp_devcontainer",
+  "image": "mcr.microsoft.com/devcontainers/cpp:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils": {
+      "installZsh": "false",
+      "username": "vscode"
+    },
+    "ghcr.io/devcontainers/features/cmake": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/clangd": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "workbench.colorTheme": "Monospace Light",
+        "cmake.showOptionsMovedNotification": false,
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "workbench.iconTheme": "monospace-icons",
+        "window.menuBarVisibility": "visible",
+        "terminal.integrated.focusAfterRun": "terminal"
+      },
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "keksiqc.idx-monospace-theme"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}
