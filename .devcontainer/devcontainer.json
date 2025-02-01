@@ -6,20 +6,23 @@
     "vscode": {
       "settings": {
         "workbench.colorTheme": "Monospace Light",
+        "workbench.iconTheme": "monospace-icons",
+        "window.menuBarVisibility": "visible",
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
         "git.enableSmartCommit": true,
-        "workbench.iconTheme": "monospace-icons",
-        "window.menuBarVisibility": "visible",
-        "terminal.integrated.focusAfterRun": "terminal"
       },
       "extensions": [
-        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vsliveshare.vsliveshare",
         "keksiqc.idx-monospace-theme"
       ]
     }
   },
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "settings": {
+    "window.menuBarVisibility": "visible"
+  }
 }
