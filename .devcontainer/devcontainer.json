@@ -24,5 +24,6 @@
     }
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "code main.cpp"
+  "postCreateCommand": "touch main.cpp",
+  "postAttachCommand": "code main.cpp"
 }
