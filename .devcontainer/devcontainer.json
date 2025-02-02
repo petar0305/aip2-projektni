@@ -1,7 +1,6 @@
 {
   "name": "c_cpp_devcontainer",
   "image": "mcr.microsoft.com/devcontainers/cpp:latest",
-  "features": {},
   "customizations": {
     "vscode": {
       "settings": {
@@ -24,5 +23,6 @@
       ]
     }
   },
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "postCreateCommand": "code main.cpp"
 }
