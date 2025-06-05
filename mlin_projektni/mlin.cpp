@@ -12,14 +12,23 @@ void ispisPloce()
   for (int i = 0; i < 9; i++)
   {
     for (int j = 0; j < 17; j++)
-      cout << "j"; 
+      cout << "j";
   }
 }
 
-int slova_u_koordinate(char figura)
+int slova_u_koordinate(string figura, string ploca[9][21], int *x, int *y)
 {
-  if (figura =='A'){
-
+  for (int i = 0; i < 9; i++)
+  {
+    for (int j = 0; j < 21; j++)
+    {
+      if (ploca[i][j] == figura)
+      {
+        *x = i;
+        *y = j;
+        return true;
+      }
+    }
   }
 }
 /*
@@ -55,8 +64,6 @@ int figure_igrac2()
 }
 */
 
-
-
 int main()
 {
   int izbor;
@@ -76,7 +83,7 @@ int main()
       cout << "Tu upisati pravila igre" << endl;
     }
 
-    else if(izbor==2)
+    else if (izbor == 2)
     {
       string igrac1, igrac2;
       cout << "Unesite ime 1. igrača: ";
@@ -84,7 +91,7 @@ int main()
       cout << "Unesite ime 2. igrača: ";
       cin >> igrac2;
       clearScreen();
-      string ploca = {'A','-','-','-','-','-','-','-','B','-','-','-','-','-','-','-','C'};
+      string ploca = {'A', '-', '-', '-', '-', '-', '-', '-', 'B', '-', '-', '-', '-', '-', '-', '-', 'C'};
       /*A---------B---------C
       | D-------E-------F |
       | | G-----H-----I | |
@@ -97,10 +104,10 @@ int main()
 
       cout << ploca;
     }
-    else if(izbor==3){
-
+    else if (izbor == 3)
+    {
     }
-    else if(izbor==4)
+    else if (izbor == 4)
       break;
   }
   /*for (int i = 0; i < 18; i++)
