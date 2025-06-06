@@ -1,10 +1,11 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-#include <thread>
+//#include <thread>
 using namespace std;
 const string emoji = "●";
 const string emoji2 = "○";
+int brojac1 = 0, brojac2 = 0;
 void clearScreen()
 {
   cout << string(100, '\n');
@@ -33,8 +34,7 @@ bool jePrazno(string ploca[9][21])
     }
   }
 }
-
-int slova_u_koordinate(string figura, string ploca[9][21], int *x, int *y)
+bool slova_u_koordinate(string figura, string ploca[9][21], int *x, int *y)
 {
   for (int i = 0; i < 9; i++)
   {
@@ -50,7 +50,10 @@ int slova_u_koordinate(string figura, string ploca[9][21], int *x, int *y)
   }
 }
 
-int figure_igrac1(string ploca[9][21], string figura, int *x, int *y)
+bool provjera_mlina(){
+
+}
+void figure_igrac1(string ploca[9][21], string figura, int *x, int *y)
 {
   if (jePrazno(ploca))
   {
@@ -58,6 +61,8 @@ int figure_igrac1(string ploca[9][21], string figura, int *x, int *y)
     clearScreen();
     ploca[*x][*y] = emoji;
     brojac1++;
+    
+    provjera_mlina();
     // krivi_unos = 0;
     // if (ploca[0][0] == ploca[0][8] && ploca[0][0] == ploca[0][16])
     // igrac1_uzima(ploca, emoji2);
@@ -66,14 +71,14 @@ int figure_igrac1(string ploca[9][21], string figura, int *x, int *y)
   }
 }
 
-int figure_igrac2(string ploca[9][21], string figura, int *x, int *y)
+void figure_igrac2(string ploca[9][21], string figura, int *x, int *y)
 {
   if (jePrazno(ploca))
   {
     slova_u_koordinate(figura, ploca, x, y);
     clearScreen();
-    ploca[*x][*y] = emoji;
-    brojac1++;
+    ploca[*x][*y] = emoji2;
+    brojac2++;
     // ispisi_plocu(ploca);
     //krivi_unos = 0;
     //if (ploca[0][0] == ploca[0][8] && ploca[0][0] == ploca[0][16])
@@ -114,11 +119,11 @@ int main()
       string ploca[9][21] = {
           {"A", "-", "-", "-", "-", "-", "-", "-", "-", "-", "B", "-", "-", "-", "-", "-", "-", "-", "-", "-", "C"},
           {"|", " ", "D", "-", "-", "-", "-", "-", "-", "-", "E", "-", "-", "-", "-", "-", "-", "-", "F", " ", "|"},
-          {"|", " ", "|", " ", "G", "-", "-", "-", "-", "-", "H", "-", "-", "-", "-", "-", "-", "-", "I", " ", "|"},
+          {"|", " ", "|", " ", "G", "-", "-", "-", "-", "-", "H", "-", "-", "-", "-", "-", "I", " ", "|", " ", "|"},
           {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
           {"J", "-", "K", "-", "L", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "M", "-", "N", "-", "O"},
           {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
-          {"|", " ", "|", " ", "P", "-", "-", "-", "-", "-", "Q", "-", "-", "-", " ", " ", "-", "-", "R", " ", "|"},
+          {"|", " ", "|", " ", "P", "-", "-", "-", "-", "-", "Q", "-", "-", "-", "-", "-", "R", " ", "|", " ", "|"},
           {"|", " ", "S", "-", "-", "-", "-", "-", "-", "-", "T", "-", "-", "-", "-", "-", "-", "-", "U", " ", "|"},
           {"V", "-", "-", "-", "-", "-", "-", "-", "-", "-", "W", "-", "-", "-", "-", "-", "-", "-", "-", "-", "X"}};
       ispisPloce(ploca);
@@ -137,8 +142,8 @@ int main()
         {
           cout << "Igrac 2(○, " << igrac2 << ") je na redu.\nUnesite slovo na koje želite postaviti figuru: ";
           cin >> figura;
-          //figure_igrac1(ploca, figura, &x, &y);
-          //ispisPloce(ploca);
+          figure_igrac2(ploca, figura, &x, &y);
+          ispisPloce(ploca);
         }
       }
     }
