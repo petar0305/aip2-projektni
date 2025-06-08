@@ -565,7 +565,7 @@ int main()
 
     if (izbor == 1)
     {
-      cout << "Tu upisati pravila igre" << endl;
+      cout << "Igra mlin se igra na ploči koja se sastoji od tri koncentrična polja povezana crtama od sredine svake stranice unutarnjeg polja do sredine stranice odgovarajućeg vanjskog polja. Dijelovi se igraju na kutnim točkama i na točkama gdje se linije sijeku tako da postoje 24 točke za igru. Uz ploču treba biti 9 crnih i 9 bijelih figura obično u obliku okruglih brojača. Osnovni cilj igre mlin je napraviti mlinove - okomite ili vodoravne linije od tri u nizu. Svaki put kad se to postigne, protivnička figura se uklanja, a opći cilj je smanjiti broj protivničkih figura na manje od tri ili onemogućiti protivnika da igra. Za početak tabla je prazna."<< endl << endl;
     }
 
     else if (izbor == 2)
