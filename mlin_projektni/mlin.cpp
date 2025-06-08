@@ -2,7 +2,18 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <sstream>
 using namespace std;
+string inicijalizirana[9][21] = {
+    {"A", "-", "-", "-", "-", "-", "-", "-", "-", "-", "B", "-", "-", "-", "-", "-", "-", "-", "-", "-", "C"},
+    {"|", " ", "D", "-", "-", "-", "-", "-", "-", "-", "E", "-", "-", "-", "-", "-", "-", "-", "F", " ", "|"},
+    {"|", " ", "|", " ", "G", "-", "-", "-", "-", "-", "H", "-", "-", "-", "-", "-", "I", " ", "|", " ", "|"},
+    {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
+    {"J", "-", "K", "-", "L", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "M", "-", "N", "-", "O"},
+    {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
+    {"|", " ", "|", " ", "P", "-", "-", "-", "-", "-", "Q", "-", "-", "-", "-", "-", "R", " ", "|", " ", "|"},
+    {"|", " ", "S", "-", "-", "-", "-", "-", "-", "-", "T", "-", "-", "-", "-", "-", "-", "-", "U", " ", "|"},
+    {"V", "-", "-", "-", "-", "-", "-", "-", "-", "-", "W", "-", "-", "-", "-", "-", "-", "-", "-", "-", "X"}};
 const string emoji = "●";
 const string emoji2 = "○";
 struct PlocaStruct{
@@ -15,8 +26,6 @@ struct stanjeIgre
   int trenutni_igrac;
   int korak_postavljanja;
   bool postavljanje_gotovo;
-  int x_pozicija;
-  int y_pozicija;
 };
 const string susjedi[24][5] = {
     {"A", "B", "J", "", ""},
@@ -78,6 +87,67 @@ const Koordinata pozicije[24] = {
     {"P", 6, 4}, {"Q", 6, 10}, {"R", 6, 16}, 
     {"S", 7, 2}, {"T", 7, 10}, {"U", 7, 18}, 
     {"V", 8, 0}, {"W", 8, 10}, {"X", 8, 20}};
+void spremiPlocuTxt(const string ploca[9][21], const string &imeDatoteke = "ploca.txt")
+{
+  ofstream datoteka(imeDatoteke);
+  if (!datoteka)
+  {
+    cout << "Greška pri otvaranju datoteke!" << endl;
+    return;
+  }
+  for (int i = 0; i < 9; i++)
+  {
+    for (int j = 0; j < 21; j++)
+    {
+      datoteka << ploca[i][j];
+    }
+    datoteka << '\n';
+  }
+  datoteka.close();
+  cout << "Ploca spremljena" << endl;
+}
+void ucitajPlocuIzTeksta(string ploca[9][21], const string &imeDatoteke = "ploca.txt")
+{
+  ifstream datoteka(imeDatoteke);
+  if (!datoteka)
+  {
+    cout << "Greška pri otvaranju datoteke!" << endl;
+    return;
+  }
+  string linija;
+  for (int i = 0; i < 9 && getline(datoteka, linija); i++)
+  {
+    istringstream iss(linija);
+    for (int j = 0; j < 21; j++)
+    {
+      iss >> ploca[i][j];
+    }
+  }
+  datoteka.close();
+}
+void spremanje_igre(stanjeIgre &StanjeIgre)
+{
+  ofstream datoteka("igra.bin", ios::binary);
+  if (!datoteka)
+  {
+    cout << "Greska pri otvaranju datoteke!" << endl;
+    return;
+  }
+  datoteka.write((char *)&StanjeIgre, sizeof(stanjeIgre));
+  datoteka.close();
+  cout << "Igra spremljena!" << endl;
+}
+void ucitavanje_igre(stanjeIgre &StanjeIgre)
+{
+  ifstream datoteka("igra.bin", ios::binary);
+  if (!datoteka)
+  {
+    cout << "Greska pri otvaranju datoteke!" << endl;
+    return;
+  }
+  datoteka.read((char *)&StanjeIgre, sizeof(stanjeIgre));
+  datoteka.close();
+}
 bool provjera_mlina(const string &polje, string ploca[9][21], const string &figura)
 {
   for (int i = 0; i < 16; i++)
@@ -235,6 +305,13 @@ void igrac1_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, in
     {
       cout << "Igrač 1, unesi polje figure koju želiš uzeti: ";
       cin >> unos;
+      if (unos == "0")
+      {
+        stanjeIgre StanjeIgre;
+        PlocaStruct plocaStruktura;
+        spremiPlocuTxt(plocaStruktura.ploca);
+        spremanje_igre(StanjeIgre);
+      }
       transform(unos.begin(), unos.end(), unos.begin(), ::toupper);
       slova_u_koordinate(unos, pocetna, x, y);
       if (ploca[x][y] == "○")
@@ -254,6 +331,13 @@ void igrac1_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, in
   while(1){
     cout << "Igrač 1, unesi polje figure koju želiš uzeti: ";
     cin >> unos;
+    if (unos == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(unos.begin(), unos.end(), unos.begin(), ::toupper);
     slova_u_koordinate(unos, pocetna, x, y);
     if (ploca[x][y] == "○"){
@@ -280,6 +364,13 @@ void igrac2_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, in
     {
       cout << "Igrač 2, unesi polje figure koju želiš uzeti: ";
       cin >> unos;
+      if (unos == "0")
+      {
+        stanjeIgre StanjeIgre;
+        PlocaStruct plocaStruktura;
+        spremiPlocuTxt(plocaStruktura.ploca);
+        spremanje_igre(StanjeIgre);
+      }
       transform(unos.begin(), unos.end(), unos.begin(), ::toupper);
       slova_u_koordinate(unos, pocetna, x, y);
       if (ploca[x][y] == "●")
@@ -299,6 +390,13 @@ void igrac2_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, in
   while(1){
     cout << "Igrač 2, unesi polje figure koju želiš uzeti: ";
     cin >> unos;
+    if (unos == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(unos.begin(), unos.end(), unos.begin(), ::toupper);
     slova_u_koordinate(unos, pocetna, x, y);
     if (ploca[x][y] == "●"){
@@ -375,6 +473,13 @@ void pomicanje_igrac1(string ploca[9][21], string pocetna[9][21], int &x, int &y
     ispisPloce(ploca);
     cout << "Igrač 1, unesi polje s kojeg želiš pomaknuti figuru: ";
     cin >> odakle;
+    if (odakle == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(odakle.begin(), odakle.end(), odakle.begin(), ::toupper);
     if (!ima_slobodno_susjedno_polje(odakle, ploca, pocetna))
     {
@@ -396,6 +501,13 @@ void pomicanje_igrac1(string ploca[9][21], string pocetna[9][21], int &x, int &y
     }
     cout << "Unesi polje na koje želiš pomaknuti figuru: ";
     cin >> kamo;
+    if (kamo == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(kamo.begin(), kamo.end(), kamo.begin(), ::toupper);
     if (!slova_u_koordinate(kamo, pocetna, x2, y2))
     {
@@ -434,6 +546,13 @@ void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y
     ispisPloce(ploca);
     cout << "Igrač 2, unesi polje s kojeg želiš pomaknuti figuru: ";
     cin >> odakle;
+    if (odakle == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(odakle.begin(), odakle.end(), odakle.begin(), ::toupper);
     if (!ima_slobodno_susjedno_polje(odakle, ploca, pocetna))
     {
@@ -455,6 +574,13 @@ void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y
     }
     cout << "Unesi polje na koje želiš pomaknuti figuru: ";
     cin >> kamo;
+    if (kamo == "0")
+    {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      spremiPlocuTxt(plocaStruktura.ploca);
+      spremanje_igre(StanjeIgre);
+    }
     transform(kamo.begin(), kamo.end(), kamo.begin(), ::toupper);
     if (!slova_u_koordinate(kamo, pocetna, x2, y2))
     {
@@ -484,72 +610,6 @@ void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y
   if (provjera_mlina(kamo, ploca, emoji2))
     igrac2_uzima(ploca, pocetna, x, y, brojac1);
 }
-
-void spremiPlocuTxt(const string ploca[9][21], const string &imeDatoteke = "ploca.txt")
-{
-  ofstream datoteka(imeDatoteke);
-  if (!datoteka)
-  {
-    cout << "Greška pri otvaranju datoteke!" << endl;
-    return;
-  }
-  for (int i = 0; i < 9; i++)
-  {
-    for (int j = 0; j < 21; j++)
-    {
-      datoteka << ploca[i][j];
-    }
-    datoteka << '\n';
-  }
-  datoteka.close();
-}
-void ucitajPlocuIzTeksta(string ploca[9][21], const string &imeDatoteke = "ploca.txt")
-{
-  ifstream datoteka(imeDatoteke);
-  if (!datoteka)
-  {
-    cout << "Greška pri otvaranju datoteke!" << endl;
-    return;
-  }
-  string linija;
-  for (int i = 0; i < 9 && getline(datoteka, linija); i++)
-  {
-    for (int j = 0; j < 21 && j < linija.size(); j++)
-    {
-      ploca[i][j] = linija[j];
-    }
-    for (int j = linija.size(); j < 21; j++)
-    {
-      ploca[i][j] = " ";
-    }
-  }
-
-  datoteka.close();
-}
-
-void spremanje_igre(stanjeIgre &StanjeIgre)
-{
-  ofstream datoteka("igra.bin", ios::binary);
-  if (!datoteka)
-  {
-    cout << "Greska pri otvaranju datoteke!" << endl;
-    return;
-  }
-  datoteka.write((char *)&StanjeIgre, sizeof(stanjeIgre));
-  datoteka.close();
-  cout << "Igra spremljena!" << endl;
-}
-void ucitavanje_igre(stanjeIgre &StanjeIgre)
-{
-  ifstream datoteka("igra.bin", ios::binary);
-  if (!datoteka)
-  {
-    cout << "Greska pri otvaranju datoteke!" << endl;
-    return;
-  }
-  datoteka.read((char *)&StanjeIgre, sizeof(stanjeIgre));
-  datoteka.close();
-}
 int main()
 {
   int izbor;
@@ -578,16 +638,6 @@ int main()
       cout << "Unesite ime 2. igrača: ";
       cin >> igrac2;
       clearScreen();
-      string inicijalizirana[9][21] = {
-          {"A", "-", "-", "-", "-", "-", "-", "-", "-", "-", "B", "-", "-", "-", "-", "-", "-", "-", "-", "-", "C"},
-          {"|", " ", "D", "-", "-", "-", "-", "-", "-", "-", "E", "-", "-", "-", "-", "-", "-", "-", "F", " ", "|"},
-          {"|", " ", "|", " ", "G", "-", "-", "-", "-", "-", "H", "-", "-", "-", "-", "-", "I", " ", "|", " ", "|"},
-          {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
-          {"J", "-", "K", "-", "L", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "M", "-", "N", "-", "O"},
-          {"|", " ", "|", " ", "|", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|", " ", "|", " ", "|"},
-          {"|", " ", "|", " ", "P", "-", "-", "-", "-", "-", "Q", "-", "-", "-", "-", "-", "R", " ", "|", " ", "|"},
-          {"|", " ", "S", "-", "-", "-", "-", "-", "-", "-", "T", "-", "-", "-", "-", "-", "-", "-", "U", " ", "|"},
-          {"V", "-", "-", "-", "-", "-", "-", "-", "-", "-", "W", "-", "-", "-", "-", "-", "-", "-", "-", "-", "X"}};
       string pocetna[9][21];
       for (int i = 0; i < 9; ++i){
         for (int j = 0; j < 21; ++j){
@@ -598,6 +648,7 @@ int main()
       ispisPloce(plocaStruktura.ploca);
       for (int i = 0; i < 18; i++)
       {
+        StanjeIgre.korak_postavljanja = i;
         string polje;
         int x, y;
         if (i % 2 == 0)
@@ -634,6 +685,11 @@ int main()
           {
             dobra_pozicija = true;
             cin >> polje;
+            if (polje == "0")
+            {
+              spremiPlocuTxt(plocaStruktura.ploca);
+              spremanje_igre(StanjeIgre);
+            }
             transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
             if (jePrazno(plocaStruktura.ploca, polje))
             {
@@ -646,6 +702,106 @@ int main()
               cout << "Krivi unos\nUnesite ponovno: ";
             }
           } while (dobra_pozicija == false);
+        }
+      }
+      StanjeIgre.postavljanje_gotovo = true;
+      clearScreen();
+      StanjeIgre.trenutni_igrac = 1;
+      while (StanjeIgre.brojac1 > 2 && StanjeIgre.brojac2 > 2)
+      {
+        int x, y;
+        if (StanjeIgre.trenutni_igrac == 1)
+        {
+          pomicanje_igrac1(plocaStruktura.ploca, pocetna, x, y, StanjeIgre.brojac2);
+          StanjeIgre.trenutni_igrac = 2;
+        }
+        else
+        {
+          pomicanje_igrac2(plocaStruktura.ploca, pocetna, x, y, StanjeIgre.brojac1);
+          StanjeIgre.trenutni_igrac = 1;
+        }
+      }
+      if (StanjeIgre.brojac1 == 2)
+      {
+        cout << "Igra je gotova\nIgrac 2 " << emoji2 << "je pobijedio";
+      }
+      else
+        cout << "Igra je gotova\nIgrac 1 " << emoji << "je pobijedio";
+    }
+    else if (izbor == 3)
+    {
+      
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      ucitajPlocuIzTeksta(plocaStruktura.ploca);
+      ucitavanje_igre(StanjeIgre);
+      ispisPloce(plocaStruktura.ploca);
+      string pocetna[9][21];
+      for (int i = 0; i < 9; ++i)
+      {
+        for (int j = 0; j < 21; ++j)
+        {
+          pocetna[i][j] = inicijalizirana[i][j];
+          plocaStruktura.ploca[i][j] = inicijalizirana[i][j];
+        }
+      }
+      if(!StanjeIgre.postavljanje_gotovo){
+        for (int i = StanjeIgre.korak_postavljanja; i < 18; i++)
+        {
+          string polje;
+          int x, y;
+          if (i % 2 == 0)
+          {
+            bool dobra_pozicija = true;
+            cout << "Igrac 1(" << emoji << ") je na redu. \nUnesite slovo na koje želite postaviti figuru: ";
+            do
+            {
+              dobra_pozicija = true;
+              cin >> polje;
+              if (polje == "0")
+              {
+                spremiPlocuTxt(plocaStruktura.ploca);
+                spremanje_igre(StanjeIgre);
+              }
+              transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
+              if (jePrazno(plocaStruktura.ploca, polje))
+              {
+                figure_igrac1(plocaStruktura.ploca, polje, x, y, pocetna, StanjeIgre.brojac2, StanjeIgre.brojac1);
+                ispisPloce(plocaStruktura.ploca);
+              }
+              else
+              {
+                dobra_pozicija = false;
+                cout << "Krivi unos\nUnesite ponovno: ";
+              }
+            } while (dobra_pozicija == false);
+          }
+          if (i % 2 == 1)
+          {
+            bool dobra_pozicija = true;
+            cout << "Igrac 2(" << emoji2 << ") je na redu.\nUnesite slovo na koje želite postaviti figuru: ";
+            do
+            {
+              dobra_pozicija = true;
+              cin >> polje;
+              if (polje == "0")
+              {
+                spremiPlocuTxt(plocaStruktura.ploca);
+                spremanje_igre(StanjeIgre);
+              }
+              transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
+              if (jePrazno(plocaStruktura.ploca, polje))
+              {
+                figure_igrac2(plocaStruktura.ploca, polje, x, y, pocetna, StanjeIgre.brojac1, StanjeIgre.brojac2);
+                ispisPloce(plocaStruktura.ploca);
+              }
+              else
+              {
+                dobra_pozicija = false;
+                cout << "Krivi unos\nUnesite ponovno: ";
+              }
+            } while (dobra_pozicija == false);
+          }
         }
       }
       clearScreen();
@@ -664,14 +820,11 @@ int main()
           StanjeIgre.trenutni_igrac = 1;
         }
       }
-    }
-    else if (izbor == 3)
-    {
-      stanjeIgre StanjeIgre;
-      PlocaStruct plocaStruktura;
-      ucitajPlocuIzTeksta(plocaStruktura.ploca);
-      ucitavanje_igre(StanjeIgre);
-      ispisPloce(plocaStruktura.ploca);
+      if(StanjeIgre.brojac1 == 2){
+        cout << "Igra je gotova\nIgrac 2 " << emoji2 << "je pobijedio";
+      }
+      else
+        cout << "Igra je gotova\nIgrac 1 " << emoji << "je pobijedio";
     }
     else if (izbor == 4)
       break;
