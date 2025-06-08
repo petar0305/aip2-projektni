@@ -13,6 +13,7 @@
     "files.associations": {
         "iostream": "cpp",
         "ostream": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "fstream": "cpp"
     }
 }

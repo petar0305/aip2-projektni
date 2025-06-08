@@ -1,11 +1,23 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-// #include <thread>
+#include <fstream>
 using namespace std;
 const string emoji = "●";
 const string emoji2 = "○";
-int brojac1 = 0, brojac2 = 0;
+struct PlocaStruct{
+  string ploca[9][21];
+};
+struct stanjeIgre
+{
+  int brojac1;
+  int brojac2;
+  int trenutni_igrac;
+  int korak_postavljanja;
+  bool postavljanje_gotovo;
+  int x_pozicija;
+  int y_pozicija;
+};
 const string susjedi[24][5] = {
     {"A", "B", "J", "", ""},
     {"B", "A", "C", "E", ""},
@@ -36,12 +48,22 @@ struct Mlin
   const char *a, *b, *c;
 };
 const Mlin sviMlinovi[16] = {
-    {"A", "B", "C"}, {"D", "E", "F"}, {"G", "H", "I"}, 
-    {"J", "K", "L"}, {"M", "N", "O"}, {"P", "Q", "R"}, 
-    {"S", "T", "U"}, {"V", "W", "X"}, {"A", "J", "V"}, 
-    {"D", "K", "S"}, {"G", "H", "I"}, {"B", "E", "H"}, 
-    {"C", "F", "I"}, {"L", "M", "N"},
-    {"O", "R", "U"}, {"X", "W", "V"}};
+    {"A", "B", "C"},
+    {"D", "E", "F"}, 
+    {"G", "H", "I"}, 
+    {"J", "K", "L"},
+    {"M", "N", "O"},
+    {"P", "Q", "R"}, 
+    {"S", "T", "U"},
+    {"V", "W", "X"},
+    {"A", "J", "V"}, 
+    {"D", "K", "S"},
+    {"G", "L", "P"},
+    {"B", "E", "H"}, 
+    {"Q", "T", "W"},
+    {"I", "M", "R"},
+    {"F", "N", "U"},
+    {"C", "O", "X"}};
 struct Koordinata
 {
   const char *oznaka;
@@ -56,7 +78,7 @@ const Koordinata pozicije[24] = {
     {"P", 6, 4}, {"Q", 6, 10}, {"R", 6, 16}, 
     {"S", 7, 2}, {"T", 7, 10}, {"U", 7, 18}, 
     {"V", 8, 0}, {"W", 8, 10}, {"X", 8, 20}};
-bool provjera_mlina(const string &polje, const string ploca[9][21], const string &figura)
+bool provjera_mlina(const string &polje, string ploca[9][21], const string &figura)
 {
   for (int i = 0; i < 16; i++)
   {
@@ -202,7 +224,7 @@ int n_figura_izvan_mlina(string ploca[9][21], string protivnik)
   }
   return n;
 }
-void igrac1_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y)
+void igrac1_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, int &brojac2)
 {
   if (n_figura_izvan_mlina(ploca, emoji2) == 0)
   {
@@ -248,7 +270,7 @@ void igrac1_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y)
       cout << "Na tom polju nije protivnička figura. Pokušaj ponovno." << endl;
   }
 }
-void igrac2_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y){
+void igrac2_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y, int &brojac1){
   if (n_figura_izvan_mlina(ploca, emoji) == 0)
   {
     cout << "Sve protivničke figure su u mlinovima. Ne možeš ništa uzeti.\n";
@@ -294,23 +316,23 @@ void igrac2_uzima(string ploca[9][21], string pocetna[9][21], int &x, int &y){
       cout << "Na tom polju nije protivnička figura. Pokušaj ponovno." << endl;
   }
 }
-void figure_igrac1(string ploca[9][21], string polje, int &x, int &y, string pocetna[9][21])
+void figure_igrac1(string ploca[9][21], string polje, int &x, int &y, string pocetna[9][21], int &brojac2, int &brojac1)
 {
   slova_u_koordinate(polje, ploca, x, y);
   clearScreen();
   ploca[x][y] = emoji;
   brojac1++;
   if (provjera_mlina(polje, ploca, emoji))
-    igrac1_uzima(ploca, pocetna, x, y);
+    igrac1_uzima(ploca, pocetna, x, y, brojac2);
 }
-void figure_igrac2(string ploca[9][21], string polje, int &x, int &y, string pocetna[9][21])
+void figure_igrac2(string ploca[9][21], string polje, int &x, int &y, string pocetna[9][21], int &brojac1, int &brojac2)
 { 
   slova_u_koordinate(polje, ploca, x, y);
   clearScreen();
   ploca[x][y] = emoji2;
   brojac2++;
   if (provjera_mlina(polje, ploca, emoji2))
-    igrac2_uzima(ploca, pocetna, x, y);
+    igrac2_uzima(ploca, pocetna, x, y, brojac1);
 }
 bool susjedna_polja(const string &a, const string &b)
 {
@@ -344,7 +366,7 @@ bool ima_slobodno_susjedno_polje(const string &polje, string ploca[9][21], strin
   }
   return false;
 }
-void pomicanje_igrac1(string ploca[9][21], string pocetna[9][21], int &x, int &y)
+void pomicanje_igrac1(string ploca[9][21], string pocetna[9][21], int &x, int &y, int &brojac2)
 {
   string odakle, kamo;
   int x1, y1, x2, y2;
@@ -401,9 +423,9 @@ void pomicanje_igrac1(string ploca[9][21], string pocetna[9][21], int &x, int &y
     break;
   }
   if (provjera_mlina(kamo, ploca, emoji))
-    igrac1_uzima(ploca, pocetna, x, y);
+    igrac1_uzima(ploca, pocetna, x, y, brojac2);
 }
-void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y)
+void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y, int &brojac1)
 {
   string odakle, kamo;
   int x1, y1, x2, y2;
@@ -460,20 +482,83 @@ void pomicanje_igrac2(string ploca[9][21], string pocetna[9][21], int &x, int &y
     break;
   }
   if (provjera_mlina(kamo, ploca, emoji2))
-    igrac2_uzima(ploca, pocetna, x, y);
+    igrac2_uzima(ploca, pocetna, x, y, brojac1);
 }
 
+void spremiPlocuTxt(const string ploca[9][21], const string &imeDatoteke = "ploca.txt")
+{
+  ofstream datoteka(imeDatoteke);
+  if (!datoteka)
+  {
+    cout << "Greška pri otvaranju datoteke!" << endl;
+    return;
+  }
+  for (int i = 0; i < 9; i++)
+  {
+    for (int j = 0; j < 21; j++)
+    {
+      datoteka << ploca[i][j];
+    }
+    datoteka << '\n';
+  }
+  datoteka.close();
+}
+void ucitajPlocuIzTeksta(string ploca[9][21], const string &imeDatoteke = "ploca.txt")
+{
+  ifstream datoteka(imeDatoteke);
+  if (!datoteka)
+  {
+    cout << "Greška pri otvaranju datoteke!" << endl;
+    return;
+  }
+  string linija;
+  for (int i = 0; i < 9 && getline(datoteka, linija); i++)
+  {
+    for (int j = 0; j < 21 && j < linija.size(); j++)
+    {
+      ploca[i][j] = linija[j];
+    }
+    for (int j = linija.size(); j < 21; j++)
+    {
+      ploca[i][j] = " ";
+    }
+  }
+
+  datoteka.close();
+}
+
+void spremanje_igre(stanjeIgre &StanjeIgre)
+{
+  ofstream datoteka("igra.bin", ios::binary);
+  if (!datoteka)
+  {
+    cout << "Greska pri otvaranju datoteke!" << endl;
+    return;
+  }
+  datoteka.write((char *)&StanjeIgre, sizeof(stanjeIgre));
+  datoteka.close();
+  cout << "Igra spremljena!" << endl;
+}
+void ucitavanje_igre(stanjeIgre &StanjeIgre)
+{
+  ifstream datoteka("igra.bin", ios::binary);
+  if (!datoteka)
+  {
+    cout << "Greska pri otvaranju datoteke!" << endl;
+    return;
+  }
+  datoteka.read((char *)&StanjeIgre, sizeof(stanjeIgre));
+  datoteka.close();
+}
 int main()
 {
   int izbor;
-
   while (1)
   {
     cout << "\t\t1. Pravila igre" << endl;
-    cout << "\t\t2. Igraj" << endl;
-    cout << "\t\t3. Ispis leaderboarda" << endl;
-    cout << "\t\t4. Spremi igru" << endl;
-    cout << "\t\t5. Izlaz" << endl;
+    cout << "\t\t2. Igraj novu igru" << endl;
+    cout << "\t\t3. Igraj spremljenu igru" << endl;
+    cout << "\t\t4. Izlaz" << endl;
     cout << "\t\tUnesite vaš izbor: ";
     cin >> izbor;
     clearScreen();
@@ -485,13 +570,15 @@ int main()
 
     else if (izbor == 2)
     {
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
       string igrac1, igrac2;
       cout << "Unesite ime 1. igrača: ";
       cin >> igrac1;
       cout << "Unesite ime 2. igrača: ";
       cin >> igrac2;
       clearScreen();
-      string ploca[9][21] = {
+      string inicijalizirana[9][21] = {
           {"A", "-", "-", "-", "-", "-", "-", "-", "-", "-", "B", "-", "-", "-", "-", "-", "-", "-", "-", "-", "C"},
           {"|", " ", "D", "-", "-", "-", "-", "-", "-", "-", "E", "-", "-", "-", "-", "-", "-", "-", "F", " ", "|"},
           {"|", " ", "|", " ", "G", "-", "-", "-", "-", "-", "H", "-", "-", "-", "-", "-", "I", " ", "|", " ", "|"},
@@ -502,10 +589,13 @@ int main()
           {"|", " ", "S", "-", "-", "-", "-", "-", "-", "-", "T", "-", "-", "-", "-", "-", "-", "-", "U", " ", "|"},
           {"V", "-", "-", "-", "-", "-", "-", "-", "-", "-", "W", "-", "-", "-", "-", "-", "-", "-", "-", "-", "X"}};
       string pocetna[9][21];
-      for (int i = 0; i < 9; ++i)
-        for (int j = 0; j < 21; ++j)
-          pocetna[i][j] = ploca[i][j];
-      ispisPloce(ploca);
+      for (int i = 0; i < 9; ++i){
+        for (int j = 0; j < 21; ++j){
+          pocetna[i][j] = inicijalizirana[i][j];
+          plocaStruktura.ploca[i][j] = inicijalizirana[i][j];
+        }
+      }
+      ispisPloce(plocaStruktura.ploca);
       for (int i = 0; i < 18; i++)
       {
         string polje;
@@ -518,11 +608,16 @@ int main()
           {
             dobra_pozicija = true;
             cin >> polje;
-            transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
-            if (jePrazno(ploca, polje))
+            if (polje == "0")
             {
-              figure_igrac1(ploca, polje, x, y, pocetna);
-              ispisPloce(ploca);
+              spremiPlocuTxt(plocaStruktura.ploca);
+              spremanje_igre(StanjeIgre);
+            }
+            transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
+            if (jePrazno(plocaStruktura.ploca, polje))
+            {
+              figure_igrac1(plocaStruktura.ploca, polje, x, y, pocetna, StanjeIgre.brojac2, StanjeIgre.brojac1);
+              ispisPloce(plocaStruktura.ploca);
             }
             else
             {
@@ -540,10 +635,10 @@ int main()
             dobra_pozicija = true;
             cin >> polje;
             transform(polje.begin(), polje.end(), polje.begin(), ::toupper);
-            if (jePrazno(ploca, polje))
+            if (jePrazno(plocaStruktura.ploca, polje))
             {
-              figure_igrac2(ploca, polje, x, y, pocetna);
-              ispisPloce(ploca);
+              figure_igrac2(plocaStruktura.ploca, polje, x, y, pocetna, StanjeIgre.brojac1, StanjeIgre.brojac2);
+              ispisPloce(plocaStruktura.ploca);
             }
             else
             {
@@ -554,28 +649,31 @@ int main()
         }
       }
       clearScreen();
-      while(brojac1>2 || brojac2>2){
+      StanjeIgre.trenutni_igrac = 1;
+      while (StanjeIgre.brojac1 > 2 && StanjeIgre.brojac2 > 2)
+      {
         int x, y;
-        int i = 0;
-        if (i % 2 == 0)
+        if (StanjeIgre.trenutni_igrac == 1)
         {
-          pomicanje_igrac1(ploca, pocetna, x, y);
+          pomicanje_igrac1(plocaStruktura.ploca, pocetna, x, y, StanjeIgre.brojac2);
+          StanjeIgre.trenutni_igrac = 2;
         }
-        i++;
-        if (i % 2 == 1)
+        else
         {
-          pomicanje_igrac2(ploca, pocetna, x, y);
+          pomicanje_igrac2(plocaStruktura.ploca, pocetna, x, y, StanjeIgre.brojac1);
+          StanjeIgre.trenutni_igrac = 1;
         }
       }
     }
     else if (izbor == 3)
     {
-
+      stanjeIgre StanjeIgre;
+      PlocaStruct plocaStruktura;
+      ucitajPlocuIzTeksta(plocaStruktura.ploca);
+      ucitavanje_igre(StanjeIgre);
+      ispisPloce(plocaStruktura.ploca);
     }
-    else if(izbor == 4){
-
-    }
-    else if (izbor == 5)
+    else if (izbor == 4)
       break;
   }
 }
